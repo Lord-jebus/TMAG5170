@@ -35,9 +35,9 @@ void sensar(){
 	uint16_t x_raw = read_register(X_CH_RESULT, 0x00, 0x00, 0x00);
 	uint16_t y_raw = read_register(Y_CH_RESULT, 0x00, 0x00, 0x00);
 	uint16_t z_raw = read_register(Z_CH_RESULT, 0x00, 0x00, 0x00);
-	x_mT = ((int16_t)x_raw) * (100.0 / 32768.0);
-	y_mT = ((int16_t)y_raw) * (100.0 / 32768.0);
-	z_mT = ((int16_t)z_raw) * (100.0 / 32768.0);
+	x_mT = ((int16_t)x_raw) * (100.0 / 32768.0)*3;
+	y_mT = ((int16_t)y_raw) * (100.0 / 32768.0)*3;
+	z_mT = ((int16_t)z_raw) * (100.0 / 32768.0)*3;
 }
 
 void conf_TMAG(){
@@ -67,14 +67,15 @@ int main(void) {
 	// PWM inicializado en ceros
 	//Salida PB01 por usar timer 1
 	PWM_init(0, 0);
-	
+		
 	while (1) {
 		//sensado
 		sensar();
 		
-		//snprintf(buffer, sizeof(buffer), "RAW: VAL -> X:%.2f mT  Y:%.2f mT  Z:%.2f mT \r\n", x_mT, y_mT, z_mT);
-		//UART_sendString(buffer);
+		snprintf(buffer, sizeof(buffer), "RAW: VAL -> X:%.2f mT  Y:%.2f mT  Z:%.2f mT \r\n", x_mT, y_mT, z_mT);
+		UART_sendString(buffer);
 		
+		/*
 		UART_readLine(buffer);   // intenta leer línea
 		if (buffer[0] != '\0') { // si no está vacía
 			x2 = atof(buffer);  // convierte string -> int
@@ -94,10 +95,11 @@ int main(void) {
 		salida = (int)fuzzy(-z_mT, z_mT - x2);
 		uint16_t freq = 1000;
 		//uint8_t duty = 0;
+		//salida = 0;
 		PWM_set(freq, salida);
 		snprintf(buffer, sizeof(buffer), "Actual: %.2f\r\n Setpoint: %.2f\r\n Error: %.2f\r\n Salida: %d \r\n", -z_mT, x2, z_mT - x2, salida);
 		UART_sendString(buffer);
-		
+		*/
 		_delay_ms(500);
 	}
 }
